@@ -66,23 +66,11 @@ public class ContactTracer {
         }
 
         else if (adjMap.containsKey(person1) && !adjMap.containsKey(person2)) {
-            ArrayList<Integer> times = new ArrayList<Integer>();
-            times.add(time);
-            HashMap<String, ArrayList<Integer>> neighbour1 =
-                    new HashMap<>();
-            neighbour1.put(person1,times);
-            adjMap.put(person2,neighbour1);
-            adjMap.get(person1).put(person2,times);
+            addOther(adjMap,time,person1,person2);
 
         }
         else if (adjMap.containsKey(person2) && !adjMap.containsKey(person1)) {
-            ArrayList<Integer> times = new ArrayList<Integer>();
-            times.add(time);
-            HashMap<String, ArrayList<Integer>> neighbour1 =
-                    new HashMap<>();
-            neighbour1.put(person2,times);
-            adjMap.put(person1,neighbour1);
-            adjMap.get(person2).put(person1,times);
+            addOther(adjMap,time,person2,person1);
         }
 
         else {
@@ -99,6 +87,14 @@ public class ContactTracer {
         }
     }
 
+    /**
+     * Private helper method for adding the other node to the graph where one
+     * of the people from trace already exists as a node.
+     * @param adjMap
+     * @param time
+     * @param person1
+     * @param person2
+     */
     private static void addOther (HashMap<String, HashMap<String,
             ArrayList<Integer>>> adjMap,int time, String person1,
                                   String person2) {
