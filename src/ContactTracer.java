@@ -1,13 +1,15 @@
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public class ContactTracer {
+    HashMap<String, HashMap<String, Integer>> adjMap;
 
     /**
      * Initialises an empty ContactTracer with no populated contact traces.
      */
     public ContactTracer() {
-        // TODO: implement this!
+        this.adjMap = new HashMap<>();
     }
 
     /**
@@ -18,7 +20,22 @@ public class ContactTracer {
      * @require traces != null
      */
     public ContactTracer(List<Trace> traces) {
-        // TODO: implement this!
+        this.adjMap = new HashMap<>();
+        for (Trace trace : traces) {
+            String vertex = trace.getPerson1();
+            String neighbour = trace.getPerson2();
+            int time = trace.getTime();
+            HashMap<String, Integer> neighbours;
+            if (adjMap.containsKey(trace.getPerson1())) {
+                adjMap.get(vertex).put(neighbour, time);
+            }
+            else {
+                neighbours = new HashMap<>();
+                neighbours.put(neighbour,time);
+                adjMap.put(vertex,neighbours);
+            }
+
+        }
     }
 
     /**
@@ -31,7 +48,25 @@ public class ContactTracer {
      * @require trace != null
      */
     public void addTrace(Trace trace) {
-        // TODO: implement this!
+        String person1 = trace.getPerson1();
+        String person2 = trace.getPerson2();
+        int time = trace.getTime();
+        HashMap<String,Integer> compareNode = new HashMap<>();
+        compareNode.put(person2,time);
+        HashMap<String,Integer> compareOtherNode = new HashMap<>();
+        compareOtherNode.put(person1,time);
+
+        if (adjMap.containsKey(person1) && adjMap.containsValue(compareNode)) {
+            return;
+        }
+        else if (adjMap.containsKey(person2) && adjMap.containsValue(compareOtherNode)){
+            return;
+        }
+        else {
+            HashMap<String, Integer> newNeighbour = new HashMap<>();
+            newNeighbour.put(person2,time);
+            adjMap.put(person1,newNeighbour);
+        }
     }
 
     /**
