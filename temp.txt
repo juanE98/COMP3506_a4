@@ -1,0 +1,176 @@
+if (adjList.containsKey(vertex)) {
+                neighbours = adjList.get(vertex);
+                neighbours.add(neighbour);
+            }
+            else {
+                neighbours = new ArrayList<>();
+                neighbours.add(neighbour);
+                adjList.put(vertex,neighbours);
+                Vertices++;
+            }
+
+
+
+
+
+
+for (Map.Entry<String, ArrayList<String>> entry : adjList.entrySet()) {
+            for (String vertex : entry.getValue()) {
+                if (colour.get(vertex) == "White") {
+                    boolean cycle = dfs(vertex, colour, parent,adjList);
+                    if (cycle) {
+                        return true;
+                    }
+                    else if (colour.get(vertex) == "Green") {
+                        return true;
+                    }
+                }
+            }
+            colour.put(node,"Black");
+            return false;
+        }
+
+
+
+
+/**
+         * Helper method to check whether the graph contains a cycle.
+         * @param adjList Adjacency list representation of graph
+         * @param i
+         * @param visited
+         * @param Stack
+         * @return
+         */
+        private static boolean hasCycleCheck (HashMap adjList,int i,
+        int Vertices,
+        boolean[] visited,
+        boolean[] Stack){
+            for (int j = 0; j < adjList.size(); j++) {
+                if (!visited[adjList.get()] && hasCycleCheck(adjList, i, ))
+            }
+            Stack[i] = false;
+            return false;
+        }
+
+        /**
+         * Helper function to check whether the graph contains a cycle.
+         * @param adjList Adjacency list representation of graph
+         * @param Vertices number of Vertices of graph
+         * @return true if graph has a cycle, false otherwise.
+         */
+        private static boolean hasCycle (HashMap adjList,int Vertices){
+            boolean[] visited = new boolean[Vertices];
+            boolean[] recursionStack = new boolean[Vertices];
+
+            for (int i = 0; i < Vertices; i++) {
+                if (hasCycleCheck(adjList, i, Vertices, visited, recursionStack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
+
+Colours: 
+
+HashMap<String, String> colour = new HashMap();
+        HashMap<String, String> parent = new HashMap();
+
+        for (String nodes : adjList.keySet()) {
+            colour.put(nodes, "White");
+            parent.put(nodes, null);
+        }
+
+        //Check if a cycle exists.
+        boolean isCyclic = false;
+        for (String nodes : adjList.keySet()) {
+            if (colour.get(nodes) == "White") {
+                isCyclic = dfs(nodes, colour, parent, adjList);
+                if (isCyclic) {
+                    break;
+                }
+            }
+        }
+
+        if (isCyclic == false) {
+            return true;
+        }
+        return false;
+
+/**
+     * DFS function that traverses all the nodes
+     * @param node
+     * @param colour
+     * @param parent
+     * @param adjList
+     * @return
+     */
+    private static boolean dfs(String node, HashMap<String,String> colour,
+                               HashMap<String,String> parent,
+                               HashMap<String, ArrayList<String>> adjList) {
+        colour.put(node, "Green");
+            for (ArrayList<String> neighbours : adjList.values()) {
+                for (String vertex : neighbours) {
+                    if (colour.get(vertex) == "White") {
+                        boolean cycle = dfs(vertex, colour, parent, adjList);
+                        if (cycle == true) {
+                            return true;
+                        }
+                    }
+                    else if (colour.get(vertex) == "Green") {
+                        return true;
+                    }
+                }
+            }
+        colour.put(node, "Black");
+        return false;
+    }
+
+
+
+WORKING: 
+private static boolean isCyclicCheck (String node,
+                                          HashMap<String, Boolean> visitedNodes,
+                                          HashMap<String, Boolean> stack, HashMap<String,
+            ArrayList<String>> adjList) {
+        if (stack.get(node) != null && visitedNodes.get(node) != null) {
+            if (stack.get(node)) {
+                return true;
+            }
+            if (visitedNodes.get(node)) {
+                return false;
+            }
+            visitedNodes.put(node, true);
+            stack.put(node, true);
+
+            ArrayList<String> children = adjList.get(node);
+
+            for (String c : children) {
+                if (isCyclicCheck(c, visitedNodes, stack, adjList)) {
+                    return true;
+                }
+            }
+        }
+
+        stack.put(node,false);
+        return false ;
+    }
+
+    private static boolean isCyclic (HashMap<String, ArrayList<String>> adjList) {
+        HashMap<String, Boolean> visitedNodes = new HashMap<>();
+        HashMap<String, Boolean> stack = new HashMap<>();
+        for (String nodes : adjList.keySet()) {
+            visitedNodes.put(nodes, false);
+            stack.put(nodes, false);
+        }
+
+        for (String node : adjList.keySet()) {
+            if (isCyclicCheck(node, visitedNodes, stack, adjList)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
