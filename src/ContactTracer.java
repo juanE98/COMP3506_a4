@@ -191,8 +191,62 @@ public class ContactTracer {
      * @return set of people who may have contracted the disease, originating from person
      */
     public Set<String> contactTrace(String person, int timeOfContagion) {
-        // TODO: implement this!
-        
-        return null;
+        Set potentialCases = new HashSet();
+        Set<String> newCases = getContactsAfter(person, timeOfContagion + 60);
+        potentialCases.addAll(newCases);
+
+        potentialCases = infected(person,newCases,
+                potentialCases);
+
+
+
+        potentialCases.remove(person);
+        return potentialCases;
+    }
+
+
+    /**
+     * Recursive Helper method.
+     * @param person
+     * @param
+     * @param potentialCases
+     * @return
+     */
+    private Set infected(String person,
+                         Set<String> newCases,
+                         Set potentialCases) {
+
+        for (Object infectedPerson : newCases) {
+            String infected = String.valueOf(infectedPerson);
+            for (int contactTime : adjMap.get(infected).get(person)) {
+                int infectedTime = contactTime + 60;
+                Set<String> possibleInfected = getContactsAfter(infected,
+                        infectedTime);
+                potentialCases.addAll(possibleInfected);
+
+            }
+
+        }
+
+        return potentialCases;
+    }
+
+    private void dfsTraverse(String person, Set potentialCases) {
+        Stack<String> stack = new Stack<>();
+        HashMap<String,Boolean> visited = new HashMap();
+        for (String nodes : adjMap.keySet()) {
+            visited.put(nodes,false);
+        }
+        stack.push(person);
+        visited.put(person,true);
+
+        while (!stack.isEmpty()) {
+            String node = stack.pop();
+
+            HashMap<String, ArrayList<Integer>> neighbours = adjMap.get(node);
+
+        }
+
+
     }
 }
