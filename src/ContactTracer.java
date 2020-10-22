@@ -1,8 +1,4 @@
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ContactTracer {
 
@@ -30,6 +26,7 @@ public class ContactTracer {
         }
     }
 
+
     /**
      * Adds a new contact trace to 
      * 
@@ -44,27 +41,28 @@ public class ContactTracer {
         String person2 = trace.getPerson2();
         int time = trace.getTime();
 
+        //Person1 and Person2 are both in the dataset.
         if (adjMap.containsKey(person1) && adjMap.containsKey(person2)
                 && !checkExisitingTrace(adjMap,trace)) {
-            HashMap<String, ArrayList<Integer>> neighbour = new HashMap<>();
             ArrayList<Integer> times = new ArrayList<>();
             times.add(time);
+            //Person1 and Person2 have not yet been in direct contact with
+            // each other.
             if (adjMap.get(person1).get(person2) == null) {
-                neighbour.put(person2,times);
-                adjMap.put(person1, neighbour);
-                adjMap.put(person2,neighbour);
+                adjMap.get(person1).put(person2,times);
+                adjMap.get(person2).put(person1,times);
             }
-            else if (adjMap.get(person2).get(person1) == null) {
-                neighbour.put(person1,times);
-                adjMap.put(person2, neighbour);
-                adjMap.put(person1,neighbour);
+            //Person1 and Person2 has already been in direct contact at least
+            // once.
+            else if (adjMap.get(person1).get(person2) != null) {
+                adjMap.get(person1).get(person2).add(time);
             }
             else {
                 adjMap.get(person1).get(person2).add(time);
                 adjMap.get(person2).get(person1).add(time);
             }
         }
-
+        //Add other person who is not in the dataset.
         else if (adjMap.containsKey(person1) && !adjMap.containsKey(person2)) {
             addOther(adjMap,time,person1,person2);
 
@@ -72,7 +70,7 @@ public class ContactTracer {
         else if (adjMap.containsKey(person2) && !adjMap.containsKey(person1)) {
             addOther(adjMap,time,person2,person1);
         }
-
+        //Both Person1 and Person2 have not yet been added to the dataset.
         else {
             ArrayList<Integer> times = new ArrayList<Integer>();
             times.add(time);
@@ -86,6 +84,7 @@ public class ContactTracer {
             adjMap.put(person2,neighbour2);
         }
     }
+
 
     /**
      * Private helper method for adding the other node to the graph where one
@@ -119,10 +118,8 @@ public class ContactTracer {
         String person1 = trace.getPerson1();
         String person2 = trace.getPerson2();
         int timeCheck = trace.getTime();
-        if (adjMap.get(person1).get(person2) != null
-                && adjMap.get(person2).get(person1) != null) {
-            if (adjMap.get(person1).get(person2).contains(timeCheck)
-                    || adjMap.get(person2).get(person1).contains(timeCheck) ) {
+        if (adjMap.get(person1).get(person2) != null) {
+            if (adjMap.get(person1).get(person2).contains(timeCheck)) {
                 return true;
             }
         }
@@ -143,9 +140,12 @@ public class ContactTracer {
      * @require person1 != null && person2 != null
      */
     public List<Integer> getContactTimes(String person1, String person2) {
-        // TODO: implement this!
-        
-        return null;
+        if (adjMap.get(person1).get(person2) == null
+                || adjMap.get(person2).get(person1) == null ) {
+
+            return Collections.emptyList();
+        }
+        return adjMap.get(person1).get(person2);
     }
 
     /**
