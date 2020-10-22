@@ -142,7 +142,6 @@ public class ContactTracer {
     public List<Integer> getContactTimes(String person1, String person2) {
         if (adjMap.get(person1).get(person2) == null
                 || adjMap.get(person2).get(person1) == null ) {
-
             return Collections.emptyList();
         }
         return adjMap.get(person1).get(person2);
@@ -156,9 +155,7 @@ public class ContactTracer {
      * @return set of the person's direct contacts
      */
     public Set<String> getContacts(String person) {
-        // TODO: implement this!
-        
-        return null;
+        return adjMap.get(person).keySet();
     }
 
     /**
@@ -170,9 +167,17 @@ public class ContactTracer {
      * @return set of the person's direct contacts at or after the timestamp
      */
     public Set<String> getContactsAfter(String person, int timestamp) {
-        // TODO: implement this!
-        
-        return null;
+        Set personContact = getContacts(person);
+        Set contactsAfter = new HashSet();
+        for(Object contactPerson : personContact) {
+            ArrayList<Integer> times = adjMap.get(contactPerson).get(person);
+            for (int time : times) {
+                if (time >= timestamp) {
+                    contactsAfter.add(contactPerson);
+                }
+            }
+        }
+        return contactsAfter;
     }
 
     /**
