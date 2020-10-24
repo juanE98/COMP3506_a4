@@ -140,11 +140,15 @@ public class ContactTracer {
      * @require person1 != null && person2 != null
      */
     public List<Integer> getContactTimes(String person1, String person2) {
+        List<Integer> ascendingTimes;
         if (adjMap.get(person1).get(person2) == null
                 || adjMap.get(person2).get(person1) == null ) {
             return Collections.emptyList();
         }
-        return adjMap.get(person1).get(person2);
+        //Sort times in ascending order .
+        ascendingTimes = adjMap.get(person1).get(person2);
+        Collections.sort(ascendingTimes);
+        return ascendingTimes;
     }
 
     /**
@@ -192,11 +196,8 @@ public class ContactTracer {
      */
     public Set<String> contactTrace(String person, int timeOfContagion) {
         Set potentialCases = new HashSet();
-        Set<String> newCases = getContactsAfter(person, timeOfContagion + 60);
-        potentialCases.addAll(newCases);
 
-        potentialCases = infected(person,newCases,
-                potentialCases);
+        infected(person,timeOfContagion,potentialCases);
 
 
 
@@ -206,29 +207,45 @@ public class ContactTracer {
 
 
     /**
-     * Recursive Helper method.
-     * @param person
+     * Helper method.
      * @param
-     * @param potentialCases
+     * @param
+     * @param
      * @return
      */
-    private Set infected(String person,
-                         Set<String> newCases,
+    private void infected(String person, int timeOfContagion,
                          Set potentialCases) {
+        Set<String> newCases = getContacts(person);
+        Set<String> previousCases = new HashSet<>();
 
-        for (Object infectedPerson : newCases) {
-            String infected = String.valueOf(infectedPerson);
-            for (int contactTime : adjMap.get(infected).get(person)) {
-                int infectedTime = contactTime + 60;
-                Set<String> possibleInfected = getContactsAfter(infected,
-                        infectedTime);
-                potentialCases.addAll(possibleInfected);
 
-            }
+        ArrayList<String> newAdd = new ArrayList<String>();
 
+        if (potentialCases.size() >= adjMap.keySet().size()) {
+            return;
         }
 
-        return potentialCases;
+        for (String personInfected : newCases) {
+            List<Integer> encounter = getContactTimes(person, personInfected);
+            for (int times : encounter) {
+                int infectTime = timeOfContagion + 60;
+                if (times >= infectTime) {
+                    newAdd.add(personInfected);
+                    potentialCases.add(personInfected);
+                }
+            }
+        }
+
+        //Next Case
+
+
+
+
+
+
+
+
+
     }
 
     private void dfsTraverse(String person, Set potentialCases) {
