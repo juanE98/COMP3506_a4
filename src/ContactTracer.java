@@ -196,74 +196,61 @@ public class ContactTracer {
      */
     public Set<String> contactTrace(String person, int timeOfContagion) {
         Set potentialCases = new HashSet();
-
-        infected(person,timeOfContagion,potentialCases);
-
-
-
+        potentialCases = BFS(person,timeOfContagion);
         potentialCases.remove(person);
         return potentialCases;
     }
 
-
     /**
-     * Helper method.
+     * Breadth-First search method of traversing the graph.
      * @param
      * @param
      * @param
      * @return
      */
-    private void infected(String person, int timeOfContagion,
-                         Set potentialCases) {
-        Set<String> newCases = getContacts(person);
-        Set<String> previousCases = new HashSet<>();
-
-
-        ArrayList<String> newAdd = new ArrayList<String>();
-
-        if (potentialCases.size() >= adjMap.keySet().size()) {
-            return;
-        }
-
-        for (String personInfected : newCases) {
-            List<Integer> encounter = getContactTimes(person, personInfected);
-            for (int times : encounter) {
-                int infectTime = timeOfContagion + 60;
-                if (times >= infectTime) {
-                    newAdd.add(personInfected);
-                    potentialCases.add(personInfected);
-                }
-            }
-        }
-
-        //Next Case
-
-
-
-
-
-
-
-
-
-    }
-
-    private void dfsTraverse(String person, Set potentialCases) {
-        Stack<String> stack = new Stack<>();
-        HashMap<String,Boolean> visited = new HashMap();
+    private Set BFS(String node, int timeOfContaigon) {
+        Set nodesVisited = new HashSet();
+        HashMap<String, Boolean> visited = new HashMap<>();
+        LinkedList<String> queueNodes = new LinkedList<>();
+        //Set all values of visited to false - unvisited.
         for (String nodes : adjMap.keySet()) {
             visited.put(nodes,false);
         }
-        stack.push(person);
-        visited.put(person,true);
 
-        while (!stack.isEmpty()) {
-            String node = stack.pop();
 
-            HashMap<String, ArrayList<Integer>> neighbours = adjMap.get(node);
+        //Mark current node as visited and enqueue it to the queue.
+        visited.put(node,true);
+        queueNodes.add(node);
+
+        while (queueNodes.size() != 0) {
+            //Dequeue
+            node = queueNodes.poll();
+            nodesVisited.add(node);
+
+            //Check if neighbour could be infected.
+            for (String contact : getContacts(node)) {
+                if (!visited.get(contact)) {
+                    queueNodes.add(contact);
+                    visited.put(node, true);
+
+                }
+
+            }
 
         }
-
-
+        return nodesVisited;
     }
+
+    private boolean checkInfected (String node, String contact,
+                                   int timeOfContaigon){
+        List<Integer> contactTimes = getContactTimes(node, contact);
+        for (int times : contactTimes) {
+            if (times > (timeOfContaigon + 60)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
