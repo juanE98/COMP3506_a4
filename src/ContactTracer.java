@@ -195,18 +195,16 @@ public class ContactTracer {
      * @return set of people who may have contracted the disease, originating from person
      */
     public Set<String> contactTrace(String person, int timeOfContagion) {
-        Set potentialCases = new HashSet();
-        potentialCases = BFS(person,timeOfContagion);
+        Set potentialCases = BFS(person,timeOfContagion);
         potentialCases.remove(person);
         return potentialCases;
     }
 
     /**
-     * Breadth-First search method of traversing the graph.
-     * @param
-     * @param
-     * @param
-     * @return
+     * Breadth first algorithm for traversing the graph.
+     * @param node starting node
+     * @param timeOfContaigon time a person is contagious
+     * @return set of people who may have contracted the disease, originating from person
      */
     private Set BFS(String node, int timeOfContaigon) {
         Set nodesVisited = new HashSet();
