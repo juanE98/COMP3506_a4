@@ -31,6 +31,7 @@ public class ErdosNumbers {
     public ErdosNumbers(List<String> papers) {
         this.adjList = new HashMap<>();
         this.papersOfAuthors = new HashMap<>();
+        //Populate hashmap representation for the constructor.
         for (int i = 0; i < papers.size(); i++) {
             String[] parts = papers.get(i).split(":");
             String paperName = parts[0];
@@ -38,25 +39,33 @@ public class ErdosNumbers {
                     new ArrayList<>(Arrays.asList(parts[1].split(
                     "[|]")));
             adjList.put(paperName, authorNames);
-
-            ArrayList<String> thePapers;
-            for (String author : authorNames) {
-                if (papersOfAuthors.containsKey(author)) {
-                    thePapers = papersOfAuthors.get(author);
-                    thePapers.add(paperName);
-                }
-                else {
-                    thePapers = new ArrayList<>();
-                    thePapers.add(paperName);
-                    papersOfAuthors.put(author,thePapers);
-                }
-            }
-
+            //Populate papersOfAuthors with Author as key, and Papers as values
+            authorPapers(authorNames, paperName);
         }
 
+    }
 
+    /**
+     * Helper method to populate papersOfAuthors in the constructor.
+     * @param authorNames List of author names
+     * @param paperName name of paper the authors have contributed.
+     */
+    private void authorPapers(List<String> authorNames, String paperName){
+        ArrayList<String> thePapers;
+        for (String author : authorNames) {
+            if (papersOfAuthors.containsKey(author)) {
+                thePapers = papersOfAuthors.get(author);
+                thePapers.add(paperName);
+            }
+            else {
+                thePapers = new ArrayList<>();
+                thePapers.add(paperName);
+                papersOfAuthors.put(author,thePapers);
+            }
+        }
+    }
 
-
+    private void createGraph() {
 
     }
 
@@ -74,7 +83,7 @@ public class ErdosNumbers {
     public Set<String> getPapers(String author) {
         HashSet<String> papers = new HashSet<>();
         papers.addAll(papersOfAuthors.get(author));
-        return papers ;
+        return papers;
     }
 
     /**
