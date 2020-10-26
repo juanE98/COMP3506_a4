@@ -217,7 +217,6 @@ public class ContactTracer {
             visited.put(nodes,false);
         }
 
-
         //Mark current node as visited and enqueue it to the queue.
         visited.put(node,true);
         queueNodes.add(node);
@@ -228,29 +227,16 @@ public class ContactTracer {
             nodesVisited.add(node);
 
             //Check if neighbour could be infected.
-            for (String contact : getContacts(node)) {
+            for (String contact : getContactsAfter(node,
+                    timeOfContaigon + 60)) {
                 if (!visited.get(contact)) {
                     queueNodes.add(contact);
                     visited.put(node, true);
-
+                    timeOfContaigon = getContactTimes(node,contact).get(0);
                 }
-
             }
-
         }
         return nodesVisited;
     }
-
-    private boolean checkInfected (String node, String contact,
-                                   int timeOfContaigon){
-        List<Integer> contactTimes = getContactTimes(node, contact);
-        for (int times : contactTimes) {
-            if (times > (timeOfContaigon + 60)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
 }
