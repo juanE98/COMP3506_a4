@@ -10,6 +10,9 @@ public class ErdosNumbers {
     /** Adjacency List representation of papers and authors */
     private HashMap<String, List<String>> adjList;
 
+    /** Hashmap of <Author, [list of papers author wrote]> */
+    private HashMap<String, ArrayList<String>> papersOfAuthors;
+
     private int n; //number nodes
     private boolean[] visited; //boolean array of size n
 
@@ -27,6 +30,7 @@ public class ErdosNumbers {
      */
     public ErdosNumbers(List<String> papers) {
         this.adjList = new HashMap<>();
+        this.papersOfAuthors = new HashMap<>();
         for (int i = 0; i < papers.size(); i++) {
             String[] parts = papers.get(i).split(":");
             String paperName = parts[0];
@@ -34,12 +38,25 @@ public class ErdosNumbers {
                     new ArrayList<>(Arrays.asList(parts[1].split(
                     "[|]")));
             adjList.put(paperName, authorNames);
+
+            ArrayList<String> thePapers;
+            for (String author : authorNames) {
+                if (papersOfAuthors.containsKey(author)) {
+                    thePapers = papersOfAuthors.get(author);
+                    thePapers.add(paperName);
+                }
+                else {
+                    thePapers = new ArrayList<>();
+                    thePapers.add(paperName);
+                    papersOfAuthors.put(author,thePapers);
+                }
+            }
+
         }
 
-        //Depth-First Search
-        this.n = papers.size();
-        this.visited = new boolean[n];
-        Arrays.fill(visited,Boolean.FALSE);
+
+
+
 
     }
 
@@ -56,14 +73,8 @@ public class ErdosNumbers {
      */
     public Set<String> getPapers(String author) {
         HashSet<String> papers = new HashSet<>();
-        for (Map.Entry<String, List<String>> entry : adjList.entrySet()) {
-            for (String authorName : entry.getValue()) {
-                if (Objects.equals(authorName,author)) {
-                    papers.add(entry.getKey());
-                }
-            }
-        }
-        return papers;
+        papers.addAll(papersOfAuthors.get(author));
+        return papers ;
     }
 
     /**
