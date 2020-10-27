@@ -8,13 +8,23 @@ public class ErdosNumbers {
     public static final String ERDOS = "Paul Erdös";
 
     /** Adjacency List representation of papers and authors */
-    private HashMap<String, List<String>> adjList;
+    private HashMap<String, List<String>> paperAuthors;
 
-    /** Hashmap of <Author, [list of papers author wrote]> */
-    private HashMap<String, ArrayList<String>> papersOfAuthors;
+    /** Adjacency List representation of <Author, [list of papers author
+     * wrote]> */
+    private HashMap<String, ArrayList<String>> authorPapers;
 
-    private int n; //number nodes
-    private boolean[] visited; //boolean array of size n
+    /** Adjacency List representation of graph
+     * Nodes: Authors
+     * Edges: paper co-authorship between authors
+     **/
+    private HashMap<String, HashMap<String,Integer>> graphErdos;
+
+    /** DFS variables */
+    private int nodesNumber; //number of nodes in graph.
+    private HashMap<String,Boolean> visited;
+    private int erdosNeighbours;
+
 
     /**
      * Initialises the class with a list of papers and authors.
@@ -29,8 +39,9 @@ public class ErdosNumbers {
      * @param papers List of papers and their authors
      */
     public ErdosNumbers(List<String> papers) {
-        this.adjList = new HashMap<>();
-        this.papersOfAuthors = new HashMap<>();
+        this.paperAuthors = new HashMap<>();
+        this.authorPapers = new HashMap<>();
+
         //Populate hashmap representation for the constructor.
         for (int i = 0; i < papers.size(); i++) {
             String[] parts = papers.get(i).split(":");
@@ -38,10 +49,22 @@ public class ErdosNumbers {
             List<String> authorNames =
                     new ArrayList<>(Arrays.asList(parts[1].split(
                     "[|]")));
-            adjList.put(paperName, authorNames);
+            paperAuthors.put(paperName, authorNames);
             //Populate papersOfAuthors with Author as key, and Papers as values
-            authorPapers(authorNames, paperName);
+            authorPapersFill(authorNames, paperName);
         }
+        createGraph(authorPapers);
+        this.nodesNumber = graphErdos.size();
+
+        //DFS traversal from ERDOS node.
+        visited = new HashMap<>();
+        for (String author : graphErdos.keySet()) {
+            visited.put(author,false);
+        }
+        erdosNeighbours = 0;
+        DFS(ERDOS);
+
+
 
     }
 
@@ -50,27 +73,62 @@ public class ErdosNumbers {
      * @param authorNames List of author names
      * @param paperName name of paper the authors have contributed.
      */
-    private void authorPapers(List<String> authorNames, String paperName){
+    private void authorPapersFill(List<String> authorNames, String paperName){
         ArrayList<String> thePapers;
         for (String author : authorNames) {
-            if (papersOfAuthors.containsKey(author)) {
-                thePapers = papersOfAuthors.get(author);
+            if (authorPapers.containsKey(author)) {
+                thePapers = authorPapers.get(author);
                 thePapers.add(paperName);
             }
             else {
                 thePapers = new ArrayList<>();
                 thePapers.add(paperName);
-                papersOfAuthors.put(author,thePapers);
+                authorPapers.put(author,thePapers);
             }
         }
     }
 
-    private void createGraph() {
+    /**
+     * Helper function to create graph:
+     * Nodes: Authors
+     * Edges: paper co-authorship between authors
+     * @param authorPapers
+     */
+    private void createGraph(HashMap<String, ArrayList<String>> authorPapers) {
+        this.graphErdos = new HashMap<>();
+        for (String authorName : authorPapers.keySet()) {
+            ArrayList collab = new ArrayList(getCollaborators(authorName));
+            for (Object partner : collab) {
+                HashMap<String, Integer> partnerPapers = new HashMap<>();
+                Set partnerCollab = getPapers(partner.toString());
+                Set authorCollab = getPapers(authorName);
+                authorCollab.retainAll(partnerCollab);
+                int coAuthorship = authorCollab.size();
+                partnerPapers.put(partner.toString(),coAuthorship);
 
+                //Add neighbouring nodes and their coAuthorship value to graph.
+                if (graphErdos.containsKey(authorName)) {
+                    HashMap existing = graphErdos.get(authorName);
+                    existing.putAll(partnerPapers);
+                    graphErdos.put(authorName,existing);
+                }
+                else {
+                    graphErdos.put(authorName,partnerPapers);
+                }
+            }
+        }
     }
 
     private void DFS(String node) {
-
+        if (visited.get(node)) {
+            return;
+        }
+        visited.put(node,true);
+        erdosNeighbours++;
+        ArrayList neighbours = new ArrayList(graphErdos.get(node).keySet());
+        for (Object next : neighbours ) {
+            DFS(next.toString());
+        }
     }
 
     /**
@@ -82,31 +140,24 @@ public class ErdosNumbers {
      */
     public Set<String> getPapers(String author) {
         HashSet<String> papers = new HashSet<>();
-        papers.addAll(papersOfAuthors.get(author));
+        papers.addAll(authorPapers.get(author));
         return papers;
     }
 
+
     /**
      * Gets all the unique co-authors the author has written a paper with.
-     *
      * @param author to get collaborators for
      * @return the unique co-authors the author has written with.
      */
     public Set<String> getCollaborators(String author) {
         HashSet<String> coAuthors = new HashSet<>();
-        ArrayList<String> tempCoAuthors = new ArrayList<>();
         HashSet<String> papersOf = new HashSet<>(getPapers(author));
-
         for (String papers : papersOf) {
-            tempCoAuthors.addAll(adjList.get(papers));
+            coAuthors.addAll(paperAuthors.get(papers));
         }
-
-        for(int i = 0; i < tempCoAuthors.size(); i++) {
-            if (!Objects.equals(tempCoAuthors.get(i), author)){
-                coAuthors.add(tempCoAuthors.get(i));
-            }
-        }
-        return coAuthors ;
+        coAuthors.remove(author);
+        return coAuthors;
     }
 
     /**
@@ -118,8 +169,9 @@ public class ErdosNumbers {
      * @return the connectivity of Erdos to all other authors.
      */
     public boolean isErdosConnectedToAll() {
-        //TODO
-
+        if (erdosNeighbours == (authorPapers.size())) {
+            return true;
+        }
         return false;
     }
 

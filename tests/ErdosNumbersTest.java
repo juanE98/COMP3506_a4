@@ -20,7 +20,6 @@ public class ErdosNumbersTest {
     @Test
     public void basicTest() {
         ErdosNumbers nums = new ErdosNumbers(SIMPLE_TEST_SET);
-
         assertEquals(Set.of("Vertex‐distinguishing edge colorings of graphs", "Adjacent vertex distinguishing edge-colorings"), nums.getPapers("Balister, P. N."));
         assertEquals(Set.of("Riordan, O. M.", "Gyori, E.", "Lehel, J.", "Schelp, R. H."), nums.getCollaborators("Balister, P. N."));
     }
@@ -42,7 +41,7 @@ public class ErdosNumbersTest {
         
         List<String> unconnectedSet = new ArrayList<String>(SIMPLE_TEST_SET);
         unconnectedSet.add("On Computable Numbers, with an Application to the Entscheidungsproblem:Turing A. M.");
-        
+
         ErdosNumbers nums2 = new ErdosNumbers(unconnectedSet);
         assertFalse(nums2.isErdosConnectedToAll());
     }
