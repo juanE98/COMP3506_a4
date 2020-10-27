@@ -116,9 +116,17 @@ public class ErdosNumbers {
                     graphErdos.put(authorName,partnerPapers);
                 }
             }
+            //Author doesn't have co-authorship with other authors.
+            if (!graphErdos.containsKey(authorName)) {
+                graphErdos.put(authorName,null);
+            }
         }
     }
 
+    /**
+     * DFS traversal algorithm for graph.
+     * @param node starting node to traverse from on graph
+     */
     private void DFS(String node) {
         if (visited.get(node)) {
             return;
@@ -160,6 +168,7 @@ public class ErdosNumbers {
         return coAuthors;
     }
 
+
     /**
      * Checks if Erdos is connected to all other author's given as input to
      * the class constructor.
@@ -169,7 +178,7 @@ public class ErdosNumbers {
      * @return the connectivity of Erdos to all other authors.
      */
     public boolean isErdosConnectedToAll() {
-        if (erdosNeighbours == (authorPapers.size())) {
+        if (erdosNeighbours == (graphErdos.size())) {
             return true;
         }
         return false;
@@ -190,9 +199,13 @@ public class ErdosNumbers {
      * @return authors' Erdos number or otherwise Integer.MAX_VALUE
      */
     public int calculateErdosNumber(String author) {
-        // TODO: implement this
-        
-        return 0;
+        int erdosNumber = 0;
+        if (author == ERDOS) {
+            return 0;
+        }
+
+
+        return erdosNumber;
     }
 
     /**
