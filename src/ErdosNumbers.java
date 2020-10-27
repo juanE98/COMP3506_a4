@@ -3,7 +3,7 @@ import java.util.*;
 public class ErdosNumbers {
 
     /**
-     * Inner class for Node implementation.
+     * Represents a node used in Dijsktra's algorithm priority queue.
      */
     class Node implements Comparator<Node> {
         public String node;
@@ -30,11 +30,11 @@ public class ErdosNumbers {
             return 0;
         }
     }
+
     /**
      * String representing Paul Erdos's name to check against
      */
     public static final String ERDOS = "Paul Erdös";
-
 
     /** Adjacency List representation of papers and authors */
     private HashMap<String, List<String>> paperAuthors;
@@ -57,7 +57,6 @@ public class ErdosNumbers {
     private PriorityQueue<Node> PQ;
     private int Vertices;
     private HashMap<String,Integer> distance;
-
 
 
     /**
@@ -99,15 +98,19 @@ public class ErdosNumbers {
 
         //Dijkstra Shortest Path algorithm
         this.PQ = new PriorityQueue<Node>(new Node());
-        dijkstra(ERDOS);
+        this.visited = new HashMap<>();
+        this.distance = new HashMap<>();
 
+        dijkstra(ERDOS);
 
     }
 
-
+    /**
+     * Dijkstra algorithm implementation.
+     * @param start starting node: ERDOS
+     */
     private void dijkstra(String start) {
-        visited = new HashMap<>();
-        HashMap<String,Integer> distance = new HashMap<>();
+
         for (String author : graphErdos.keySet()) {
             visited.put(author,false);
             distance.put(author,Integer.MAX_VALUE);
@@ -270,7 +273,6 @@ public class ErdosNumbers {
         if (author == ERDOS) {
             return 0;
         }
-
         return distance.get(author);
     }
 
