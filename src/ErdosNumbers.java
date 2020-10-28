@@ -126,8 +126,8 @@ public class ErdosNumbers {
                 if (visited.get(neighbour)) {
                     continue;
                 }
-                int neighbourCost = graphErdos.get(node.node).get(neighbour);
 
+                int neighbourCost = 1;
                 //Edge Relaxation
                 int newDistance = distance.get(node.node) + neighbourCost;
                 if (newDistance < distance.get(neighbour)) {
@@ -286,9 +286,12 @@ public class ErdosNumbers {
      * @return average Erdos number of paper's authors
      */
     public double averageErdosNumber(String paper) {
-        // TODO: implement this
-        
-        return 0;
+        List authors = paperAuthors.get(paper);
+        double erdosAvg = 0;
+        for (Object author : authors) {
+            erdosAvg += calculateErdosNumber(author.toString());
+        }
+        return erdosAvg / authors.size();
     }
 
     /**

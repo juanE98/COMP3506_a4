@@ -2,7 +2,7 @@ import java.util.*;
 
 public class ContactTracer {
 
-    //Adjacency map representation of graph.
+    /**Adjacency map representation of graph.*/
     HashMap<String, HashMap<String, ArrayList<Integer>>> adjMap;
 
     /**
