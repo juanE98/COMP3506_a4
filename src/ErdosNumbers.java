@@ -96,12 +96,11 @@ public class ErdosNumbers {
         erdosNeighbours = 0;
         DFS(ERDOS);
 
-        //Dijkstra Shortest Path algorithm
+        //Dijkstra Shortest Path algorithm for unweighted Erdos Number
         this.PQ = new PriorityQueue<Node>(new Node());
         this.visited = new HashMap<>();
         this.distance = new HashMap<>();
-
-        dijkstra(ERDOS);
+        dijkstra(ERDOS,false);
 
     }
 
@@ -109,7 +108,7 @@ public class ErdosNumbers {
      * Dijkstra algorithm implementation.
      * @param start starting node: ERDOS
      */
-    private void dijkstra(String start) {
+    private void dijkstra(String start,boolean weighted) {
 
         for (String author : graphErdos.keySet()) {
             visited.put(author,false);
@@ -127,7 +126,13 @@ public class ErdosNumbers {
                     continue;
                 }
 
-                int neighbourCost = 1;
+                int neighbourCost =0;
+                if (!weighted) {
+                    neighbourCost = 1;
+                }
+                else {
+                    neighbourCost = graphErdos.get(node).get(neighbour);
+                }
                 //Edge Relaxation
                 int newDistance = distance.get(node.node) + neighbourCost;
                 if (newDistance < distance.get(neighbour)) {
