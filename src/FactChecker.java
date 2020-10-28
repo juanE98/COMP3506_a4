@@ -42,6 +42,14 @@ public class FactChecker {
         return true;
     }
 
+    /**
+     * Helper method to check if graph is cyclic.
+     * @param node starting node
+     * @param visitedNodes visited nodes
+     * @param stack
+     * @param adjList graph representation
+     * @return
+     */
     private static boolean isCyclicCheck (String node,
                                           HashMap<String, Boolean> visitedNodes,
                                           HashMap<String, Boolean> stack, HashMap<String,
@@ -69,6 +77,11 @@ public class FactChecker {
         return false ;
     }
 
+    /**
+     * Method to check if graph is cyclic.
+     * @param adjList graph representation
+     * @return
+     */
     private static boolean isCyclic (HashMap<String, ArrayList<String>> adjList) {
         HashMap<String, Boolean> visitedNodes = new HashMap<>();
         HashMap<String, Boolean> stack = new HashMap<>();
@@ -84,6 +97,5 @@ public class FactChecker {
         }
         return false;
     }
-
 
 }

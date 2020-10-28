@@ -3,8 +3,7 @@ import java.util.*;
 public class ErdosNumbers {
 
     /**
-     * Represents a node used in Dijsktra's algorithm priority queue for
-     * unweighted edges.
+     * Represents a node used in Dijsktra's algorithm priority queue.
      */
     class Node implements Comparator<Node> {
         public String node;
@@ -31,7 +30,6 @@ public class ErdosNumbers {
             return (int) 0.0;
         }
     }
-
 
     /**
      * String representing Paul Erdos's name to check against
@@ -98,75 +96,78 @@ public class ErdosNumbers {
         erdosNeighbours = 0;
         DFS(ERDOS);
 
-        //Dijkstra Shortest Path algorithm for unweighted Erdos Number
-        dijkstra(ERDOS,false);
-        dijkstra(ERDOS,true);
-
+        //Dijkstra shortest path algorithm for unweighted Erdos Number
+        dijkstra(ERDOS);
+        //Dijkstra shortest path algorithm for weighted Erdos Number
+        dijkstraWeighted(ERDOS);
 
     }
 
     /**
-     * Dijkstra algorithm implementation.
+     * Dijkstra algorithm implementation for unweighted graph.
      * @param start starting node: ERDOS
      */
-    private void dijkstra(String start, boolean weighted) {
+    private void dijkstra(String start) {
 
-        if (!weighted) {
-            this.PQ = new PriorityQueue<Node>(new Node());
-            this.visited = new HashMap<>();
-            this.distance = new HashMap<>();
-            for (String author : graphErdos.keySet()) {
-                visited.put(author, false);
-                distance.put(author, Integer.MAX_VALUE);
-            }
-            distance.put(start, 0);
-            PQ.add(new Node(start,0));
+        this.PQ = new PriorityQueue<Node>(new Node());
+        this.visited = new HashMap<>();
+        this.distance = new HashMap<>();
+        for (String author : graphErdos.keySet()) {
+            visited.put(author, false);
+            distance.put(author, Integer.MAX_VALUE);
+        }
+        distance.put(start, 0);
+        PQ.add(new Node(start,0));
 
-            while ((PQ.size() != 0)) {
-                //Remove node with minimum distance from priority queue.
-                Node node = PQ.poll();
-                visited.put(node.node, true);
-                for (String neighbour : graphErdos.get(node.node).keySet()) {
-                    if (visited.get(neighbour)) {
-                        continue;
-                    }
-                    int neighbourCost = 1;
-                    //Edge Relaxation
-                    int newDistance = distance.get(node.node) + neighbourCost;
-                    if (newDistance < distance.get(neighbour)) {
-                        distance.put(neighbour, newDistance);
-                        PQ.add(new Node(neighbour, newDistance));
+        while ((PQ.size() != 0)) {
+            //Remove node with minimum distance from priority queue.
+            Node node = PQ.poll();
+            visited.put(node.node, true);
+            for (String neighbour : graphErdos.get(node.node).keySet()) {
+                if (visited.get(neighbour)) {
+                    continue;
+                }
+                int neighbourCost = 1;
+                //Edge Relaxation
+                int newDistance = distance.get(node.node) + neighbourCost;
+                if (newDistance < distance.get(neighbour)) {
+                    distance.put(neighbour, newDistance);
+                    PQ.add(new Node(neighbour, newDistance));
 
-                    }
                 }
             }
         }
-        else {
-            this.PQ = new PriorityQueue<Node>((new Node()));
-            this.visited = new HashMap<>();
-            this.distanceWeighted = new HashMap<>();
-            for (String author : graphErdos.keySet()) {
-                visited.put(author, false);
-                distanceWeighted.put(author, Double.MAX_VALUE);
-            }
-            distanceWeighted.put(start,0.0);
-            PQ.add(new Node(start,0.0));
+    }
 
-            while ((PQ.size() != 0)) {
-                Node node = PQ.poll();
-                visited.put(node.node, true);
-                for (String neighbour : graphErdos.get(node.node).keySet()) {
-                    if (visited.get(neighbour)) {
-                        continue;
-                    }
-                    double neighbourCost =
-                            graphErdos.get(node.node).get(neighbour);
-                    double newDistnace =
-                             (distanceWeighted.get(node.node) + 1/ neighbourCost);
-                    if (newDistnace < distanceWeighted.get(neighbour)) {
-                        distanceWeighted.put(neighbour, newDistnace);
-                        PQ.add(new Node(neighbour, (int) newDistnace));
-                    }
+    /**
+     * Dijkstra algorithm implementation for weighted graph.
+     * @param start starting node: ERDOS
+     */
+    private void dijkstraWeighted(String start) {
+        this.PQ = new PriorityQueue<Node>((new Node()));
+        this.visited = new HashMap<>();
+        this.distanceWeighted = new HashMap<>();
+        for (String author : graphErdos.keySet()) {
+            visited.put(author, false);
+            distanceWeighted.put(author, Double.MAX_VALUE);
+        }
+        distanceWeighted.put(start,0.0);
+        PQ.add(new Node(start,0.0));
+
+        while ((PQ.size() != 0)) {
+            Node node = PQ.poll();
+            visited.put(node.node, true);
+            for (String neighbour : graphErdos.get(node.node).keySet()) {
+                if (visited.get(neighbour)) {
+                    continue;
+                }
+                double neighbourCost =
+                        graphErdos.get(node.node).get(neighbour);
+                double newDistnace =
+                        (distanceWeighted.get(node.node) + 1/ neighbourCost);
+                if (newDistnace < distanceWeighted.get(neighbour)) {
+                    distanceWeighted.put(neighbour, newDistnace);
+                    PQ.add(new Node(neighbour, (int) newDistnace));
                 }
             }
         }
