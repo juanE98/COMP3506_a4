@@ -8,13 +8,13 @@ public class ErdosNumbers {
      */
     class Node implements Comparator<Node> {
         public String node;
-        public int cost;
+        public double cost;
 
         public Node(){
 
         }
 
-        public Node(String node, int cost) {
+        public Node(String node, double cost) {
             this.node = node;
             this.cost = cost;
         }
@@ -23,44 +23,15 @@ public class ErdosNumbers {
         @Override
         public int compare(Node node, Node t1) {
             if (node.cost < t1.cost) {
-                return -1;
+                return (int) -1.0;
             }
             if (node.cost > t1.cost) {
-                return 1;
+                return (int) 1.0;
             }
-            return 0;
+            return (int) 0.0;
         }
     }
 
-    /**
-     * Represents a node used in Dijsktra's algorithm priority queue for
-     * weighted edges.
-     */
-    class NodeW implements Comparator<Node> {
-        public String node;
-        public double cost;
-
-        public NodeW(){
-
-        }
-
-        public NodeW(String node, double cost) {
-            this.node = node;
-            this.cost = cost;
-        }
-
-        //Compare node ERDOS numbers.
-        @Override
-        public int compare(Node node, Node t1) {
-            if (node.cost < t1.cost) {
-                return -1;
-            }
-            if (node.cost > t1.cost) {
-                return 1;
-            }
-            return 0;
-        }
-    }
 
     /**
      * String representing Paul Erdos's name to check against
@@ -86,7 +57,6 @@ public class ErdosNumbers {
 
     /**Dijkstra variables */
     private PriorityQueue<Node> PQ; //priority queue for unweighted edges.
-    private PriorityQueue<NodeW> PQW; //priority queue for weighted edges.
     private HashMap<String,Integer> distance; //unweighted edges
     private HashMap<String,Double> distanceWeighted;  //weighted edges
 
@@ -130,6 +100,7 @@ public class ErdosNumbers {
 
         //Dijkstra Shortest Path algorithm for unweighted Erdos Number
         dijkstra(ERDOS,false);
+        dijkstra(ERDOS,true);
 
 
     }
@@ -150,22 +121,9 @@ public class ErdosNumbers {
             }
             distance.put(start, 0);
             PQ.add(new Node(start,0));
-        }
-        else {
-            this.PQW = new PriorityQueue<NodeW>((Collection<? extends NodeW>) new NodeW());
-            this.visited = new HashMap<>();
-            this.distanceWeighted = new HashMap<>();
-            for (String author : graphErdos.keySet()) {
-                visited.put(author, false);
-                distanceWeighted.put(author, Double.MAX_VALUE);
-            }
-            distanceWeighted.put(start,0.0);
-            PQW.add(new NodeW(start,0.0));
-        }
 
-        if (!weighted) {
             while ((PQ.size() != 0)) {
-            //Remove node with minimum distance from priority queue.
+                //Remove node with minimum distance from priority queue.
                 Node node = PQ.poll();
                 visited.put(node.node, true);
                 for (String neighbour : graphErdos.get(node.node).keySet()) {
@@ -184,18 +142,31 @@ public class ErdosNumbers {
             }
         }
         else {
-            NodeW node = PQW.poll();
-            visited.put(node.node, true);
-            for (String neighbour : graphErdos.get(node.node).keySet()) {
-                if (visited.get(neighbour)) {
-                    continue;
-                }
-                double neighbourCost = graphErdos.get(node).get(neighbour);
-                double newDistnace =
-                        distanceWeighted.get(neighbour) + neighbourCost;
-                if (newDistnace < distanceWeighted.get(neighbour)) {
-                    distanceWeighted.put(neighbour,newDistnace);
-                    PQ.add(new Node(neighbour, (int) newDistnace));
+            this.PQ = new PriorityQueue<Node>((new Node()));
+            this.visited = new HashMap<>();
+            this.distanceWeighted = new HashMap<>();
+            for (String author : graphErdos.keySet()) {
+                visited.put(author, false);
+                distanceWeighted.put(author, Double.MAX_VALUE);
+            }
+            distanceWeighted.put(start,0.0);
+            PQ.add(new Node(start,0.0));
+
+            while ((PQ.size() != 0)) {
+                Node node = PQ.poll();
+                visited.put(node.node, true);
+                for (String neighbour : graphErdos.get(node.node).keySet()) {
+                    if (visited.get(neighbour)) {
+                        continue;
+                    }
+                    double neighbourCost =
+                            graphErdos.get(node.node).get(neighbour);
+                    double newDistnace =
+                             (distanceWeighted.get(node.node) + 1/ neighbourCost);
+                    if (newDistnace < distanceWeighted.get(neighbour)) {
+                        distanceWeighted.put(neighbour, newDistnace);
+                        PQ.add(new Node(neighbour, (int) newDistnace));
+                    }
                 }
             }
         }
@@ -370,8 +341,10 @@ public class ErdosNumbers {
      * @return author's weighted Erdos number
      */
     public double calculateWeightedErdosNumber(String author) {
-
-        return 0;
+        if (author == ERDOS) {
+            return 0;
+        }
+        return distanceWeighted.get(author);
     }
 }
 
