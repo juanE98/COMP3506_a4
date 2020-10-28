@@ -55,7 +55,6 @@ public class ErdosNumbers {
 
     /**Dijkstra variables */
     private PriorityQueue<Node> PQ;
-    private int Vertices;
     private HashMap<String,Integer> distance;
 
 
@@ -100,7 +99,7 @@ public class ErdosNumbers {
         this.PQ = new PriorityQueue<Node>(new Node());
         this.visited = new HashMap<>();
         this.distance = new HashMap<>();
-        dijkstra(ERDOS,false);
+        dijkstra(ERDOS);
 
     }
 
@@ -108,7 +107,7 @@ public class ErdosNumbers {
      * Dijkstra algorithm implementation.
      * @param start starting node: ERDOS
      */
-    private void dijkstra(String start,boolean weighted) {
+    private void dijkstra(String start) {
 
         for (String author : graphErdos.keySet()) {
             visited.put(author,false);
@@ -125,14 +124,8 @@ public class ErdosNumbers {
                 if (visited.get(neighbour)) {
                     continue;
                 }
+                int neighbourCost = 1;
 
-                int neighbourCost =0;
-                if (!weighted) {
-                    neighbourCost = 1;
-                }
-                else {
-                    neighbourCost = graphErdos.get(node).get(neighbour);
-                }
                 //Edge Relaxation
                 int newDistance = distance.get(node.node) + neighbourCost;
                 if (newDistance < distance.get(neighbour)) {
@@ -274,7 +267,6 @@ public class ErdosNumbers {
      * @return authors' Erdos number or otherwise Integer.MAX_VALUE
      */
     public int calculateErdosNumber(String author) {
-        int erdosNumber = 0;
         if (author == ERDOS) {
             return 0;
         }
@@ -311,7 +303,7 @@ public class ErdosNumbers {
      * @return author's weighted Erdos number
      */
     public double calculateWeightedErdosNumber(String author) {
-        // TODO: implement this
+
 
         return 0;
     }
