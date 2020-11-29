@@ -348,5 +348,3 @@ public class ErdosNumbers {
         return distanceWeighted.get(author);
     }
 }
-
-
